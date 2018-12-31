@@ -4,11 +4,10 @@ use std::io::Write;
 use std::path::PathBuf;
 
 fn main() {
+
     let target = env::var("TARGET").unwrap();
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 
-    has_fpu(&target);
-    let is_armv6m = is_armv6m(&target);
 
     if target.starts_with("thumbv") {
         fs::copy(
@@ -16,7 +15,15 @@ fn main() {
             out_dir.join("libcortex-m-rt.a"),
         ).unwrap();
         println!("cargo:rustc-link-lib=static=cortex-m-rt");
+    } else {
+        // for non thumb targets, we need no custom linking
+        // useful to klee-analysis
+        // TODO check with Jorge
+        return ()
     }
+
+    has_fpu(&target);
+    let is_armv6m = is_armv6m(&target);
 
     // Put the linker script somewhere the linker can find it
     let out = &PathBuf::from(env::var_os("OUT_DIR").unwrap());

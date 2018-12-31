@@ -1,17 +1,28 @@
 //! Minimal `cortex-m-rt` based program
 
 #![deny(unsafe_code)]
-#![deny(warnings)]
+// #![deny(warnings)]
 #![no_main]
 #![no_std]
 
 extern crate cortex_m_rt as rt;
-extern crate panic_halt;
+#[macro_use]
+extern crate klee;
+extern crate panic_abort;
 
-use rt::entry;
+//use rt::entry;
 
-// the program entry point
-#[entry]
-fn main() -> ! {
-    loop {}
+// // the program entry point
+// #[entry]
+// fn main() -> ! {
+//     panic!();
+// }
+
+#[no_mangle]
+fn main() {
+    let mut s: u32 = 0;
+    ksymbol!(&mut s, "s");
+    if s == 0 {
+        panic!();
+    }
 }

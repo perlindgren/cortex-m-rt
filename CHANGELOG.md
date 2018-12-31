@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+- klee-analysis
+
 ## [v0.6.7] - 2018-12-15
 
 ### Fixed
