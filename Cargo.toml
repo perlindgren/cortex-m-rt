@@ -10,6 +10,7 @@ readme = "README.md"
 repository = "https://github.com/rust-embedded/cortex-m-rt"
 version = "0.7.0"
 autoexamples = true
+edition = "2018"
 
 [package.metadata.docs.rs]
 features = ["device"]

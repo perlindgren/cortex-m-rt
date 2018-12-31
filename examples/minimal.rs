@@ -10,19 +10,24 @@ extern crate cortex_m_rt as rt;
 extern crate klee;
 extern crate panic_abort;
 
-//use rt::entry;
+use rt::{entry, exception};
 
-// // the program entry point
-// #[entry]
-// fn main() -> ! {
-//     panic!();
+// the program entry point
+#[entry]
+fn main() -> ! {
+    panic!();
+}
+
+// #[no_mangle]
+// fn main() {
+//     let mut s: u32 = 0;
+//     ksymbol!(&mut s, "s");
+//     if s == 0 {
+//         panic!();
+//     }
 // }
 
-#[no_mangle]
-fn main() {
-    let mut s: u32 = 0;
-    ksymbol!(&mut s, "s");
-    if s == 0 {
-        panic!();
-    }
+#[exception]
+fn DefaultHandler(_irqn: i16) {
+    panic!();
 }
