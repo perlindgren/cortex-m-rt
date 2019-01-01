@@ -59,7 +59,7 @@ required-features = ["device"]
 
 [features]
 device = []
-klee-analysis = ["klee/klee-analysis", "cortex-m/klee-analysis", "volatile-register/klee-analysis", "vcell/klee-analysis"]
+klee-analysis = ["cortex-m-rt-macros/klee-analysis", "klee/klee-analysis", "cortex-m/klee-analysis", "volatile-register/klee-analysis", "vcell/klee-analysis"]
 
 [profile.dev]
 incremental = false

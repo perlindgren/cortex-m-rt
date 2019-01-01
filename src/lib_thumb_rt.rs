@@ -489,7 +489,7 @@ pub unsafe extern "C" fn Reset() -> ! {
 
     extern "Rust" {
         // This symbol will be provided by the user via `#[entry]`
-        fn main() -> !;
+        fn user_main();
 
         // This symbol will be provided by the user via `#[pre_init]`
         fn __pre_init();
@@ -503,7 +503,10 @@ pub unsafe extern "C" fn Reset() -> ! {
 
     match () {
         #[cfg(not(has_fpu))]
-        () => main(),
+        () => {
+            user_main();
+            loop {}
+        }
         #[cfg(has_fpu)]
         () => {
             // We redefine these here to avoid pulling the `cortex-m` crate as a dependency
@@ -521,13 +524,19 @@ pub unsafe extern "C" fn Reset() -> ! {
             // handler. Inlining can cause the FPU instructions in the user `main` to be executed
             // before enabling the FPU, and that would produce a hard to diagnose hard fault at
             // runtime.
-            #[inline(never)]
-            #[export_name = "ResetTrampoline"]
-            fn trampoline() -> ! {
-                unsafe { main() }
-            }
+            // #[inline(never)]
+            // #[export_name = "ResetTrampoline"]
+            // fn trampoline() {
+            //     unsafe { main() }
+            // }
 
-            trampoline()
+            // trampoline()
+
+            // Per: Why not use a fence instead?
+            // TODO: Put appropriate fence here.
+            user_main();
+
+            loop {}
         }
     }
 }

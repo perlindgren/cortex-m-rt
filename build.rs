@@ -4,22 +4,21 @@ use std::io::Write;
 use std::path::PathBuf;
 
 fn main() {
-
     let target = env::var("TARGET").unwrap();
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-
 
     if target.starts_with("thumbv") {
         fs::copy(
             format!("bin/{}.a", target),
             out_dir.join("libcortex-m-rt.a"),
-        ).unwrap();
+        )
+        .unwrap();
         println!("cargo:rustc-link-lib=static=cortex-m-rt");
     } else {
         // for non thumb targets, we need no custom linking
         // useful to klee-analysis
         // TODO check with Jorge
-        return ()
+        return ();
     }
 
     has_fpu(&target);
@@ -42,7 +41,8 @@ fn main() {
 /* Provides weak aliases (cf. PROVIDED) for device specific interrupt handlers */
 /* This will usually be provided by a device crate generated using svd2rust (see `device.x`) */
 INCLUDE device.x"#
-        ).unwrap();
+        )
+        .unwrap();
         f
     } else {
         let mut f = File::create(out.join("link.x")).unwrap();
@@ -63,7 +63,8 @@ handlers.");
 "#,
         max_int_handlers * 4 + 0x40,
         max_int_handlers
-    ).unwrap();
+    )
+    .unwrap();
 
     println!("cargo:rustc-link-search={}", out.display());
 

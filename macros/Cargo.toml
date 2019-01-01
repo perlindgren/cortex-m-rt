@@ -25,4 +25,7 @@ version = "0.5.5"
 default-features = false
 
 [dev-dependencies]
-cortex-m-rt = { path = "..", version = "0.6.0" }
+cortex-m-rt = { path = "..", version = "0.7.0" }
+
+[features]
+klee-analysis = []

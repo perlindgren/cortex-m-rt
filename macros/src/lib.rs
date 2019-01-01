@@ -92,14 +92,15 @@ pub fn entry(args: TokenStream, input: TokenStream) -> TokenStream {
         && f.decl.inputs.is_empty()
         && f.decl.generics.params.is_empty()
         && f.decl.generics.where_clause.is_none()
-        && f.decl.variadic.is_none()
-        && match f.decl.output {
-            ReturnType::Default => false,
-            ReturnType::Type(_, ref ty) => match **ty {
-                Type::Never(_) => true,
-                _ => false,
-            },
-        };
+        && f.decl.variadic.is_none();
+    // should check that entry is -> ()
+    // && match f.decl.output {
+    //     ReturnType::Default => false,
+    //     ReturnType::Type(_, ref ty) => match **ty {
+    //         Type::Never(_) => true,
+    //         _ => false,
+    //     },
+    // };
 
     if !valid_signature {
         return parse::Error::new(
@@ -146,17 +147,29 @@ pub fn entry(args: TokenStream, input: TokenStream) -> TokenStream {
             )
         })
         .collect::<Vec<_>>();
+    if cfg!(feature = "klee-analysis") {
+        quote!(
+            #[export_name = "user_main"]
+            #(#attrs)*
+            pub #unsafety fn #hash() -> () {
+                #(#vars)*
 
-    quote!(
-        #[export_name = "main"]
-        #(#attrs)*
-        pub #unsafety fn #hash() -> ! {
-            #(#vars)*
+                #(#stmts)*
+            }
+        )
+        .into()
+    } else {
+        quote!(
+            #[export_name = "user_main"]
+            #(#attrs)*
+            pub #unsafety fn #hash() -> () {
+                #(#vars)*
 
-            #(#stmts)*
-        }
-    )
-    .into()
+                #(#stmts)*
+            }
+        )
+        .into()
+    }
 }
 
 /// Attribute to declare an exception handler
@@ -321,6 +334,7 @@ pub fn exception(args: TokenStream, input: TokenStream) -> TokenStream {
                 && f.decl.generics.params.is_empty()
                 && f.decl.generics.where_clause.is_none()
                 && f.decl.variadic.is_none()
+                // TODO, check signature
                 && match f.decl.output {
                     ReturnType::Default => true,
                     ReturnType::Type(_, ref ty) => match **ty {
@@ -344,17 +358,26 @@ pub fn exception(args: TokenStream, input: TokenStream) -> TokenStream {
                 _ => unreachable!(),
             };
 
+            let body = if cfg!(feature = "klee-analysis") {
+                quote!(
+                        #(#stmts)*
+                )
+            } else {
+                quote!(
+                        // fake argument by reading register
+                        extern crate core;
+                        const SCB_ICSR: *const u32 = 0xE000_ED04 as *const u32;
+                        let #arg = unsafe { core::ptr::read(SCB_ICSR) as u8 as i16 - 16 };
+
+                        #(#stmts)*
+                )
+            };
+
             quote!(
                 #[export_name = #ident_s]
                 #(#attrs)*
-                pub #unsafety extern "C" fn #hash() {
-                    extern crate core;
-
-                    const SCB_ICSR: *const u32 = 0xE000_ED04 as *const u32;
-
-                    let #arg = unsafe { core::ptr::read(SCB_ICSR) as u8 as i16 - 16 };
-
-                    #(#stmts)*
+                pub #unsafety extern "C" fn #hash(#arg) {
+                    #body;
                 }
             )
             .into()
@@ -373,14 +396,15 @@ pub fn exception(args: TokenStream, input: TokenStream) -> TokenStream {
                 }
                 && f.decl.generics.params.is_empty()
                 && f.decl.generics.where_clause.is_none()
-                && f.decl.variadic.is_none()
-                && match f.decl.output {
-                    ReturnType::Default => false,
-                    ReturnType::Type(_, ref ty) => match **ty {
-                        Type::Never(_) => true,
-                        _ => false,
-                    },
-                };
+                && f.decl.variadic.is_none();
+            // TODO, check -> ()
+            // && match f.decl.output {
+            //     ReturnType::Default => false,
+            //     ReturnType::Type(_, ref ty) => match **ty {
+            //         Type::Never(_) => true,
+            //         _ => false,
+            //     },
+            // };
 
             if !valid_signature {
                 return parse::Error::new(
@@ -398,16 +422,27 @@ pub fn exception(args: TokenStream, input: TokenStream) -> TokenStream {
 
             let pat = &arg.pat;
 
-            quote!(
-                #[export_name = "HardFault"]
-                #[link_section = ".HardFault.user"]
-                #(#attrs)*
-                pub #unsafety extern "C" fn #hash(#arg) -> ! {
+            let body = if cfg!(feature = "klee-analysis") {
+                quote!(
+                    #(#stmts)*
+                )
+            } else {
+                quote!(
                     extern crate cortex_m_rt;
 
                     // further type check of the input argument
                     let #pat: &cortex_m_rt::ExceptionFrame = #pat;
                     #(#stmts)*
+                    loop {}
+                )
+            };
+
+            quote!(
+                #[export_name = "HardFault"]
+                #[link_section = ".HardFault.user"]
+                #(#attrs)*
+                pub #unsafety extern "C" fn #hash(#arg) {
+                    #body
                 }
             )
             .into()
