@@ -15,10 +15,12 @@
 #[cfg(feature = "klee-analysis")]
 pub mod lib_klee_rt;
 #[cfg(feature = "klee-analysis")]
-pub use lib_klee_rt::*;
+pub use self::lib_klee_rt::*;
 
 // re-export `lib_thumb_rt` thumb library as `cortex_m_rt`
 #[cfg(not(feature = "klee-analysis"))]
 pub mod lib_thumb_rt;
 #[cfg(not(feature = "klee-analysis"))]
-pub use lib_thumb_rt::*; // ugly path for now...
+pub use self::lib_thumb_rt::*; // ugly path for now...
+
+// pub use lib_thumb_rt::*; // self can be dropped when uniform paths are stabalized
