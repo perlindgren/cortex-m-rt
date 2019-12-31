@@ -1,7 +1,7 @@
 //! klee-rt
 
 extern crate cortex_m_rt_macros as macros;
-extern crate klee;
+extern crate klee-sys;
 
 pub use self::macros::{entry, exception, pre_init};
 
@@ -29,7 +29,7 @@ fn main() {
     }
 
     let mut root = 0;
-    klee::ksymbol!(&mut root, "ROOT");
+    klee::klee_make_symbolic!(&mut root, "ROOT");
     unsafe {
         match root {
             0 => __pre_init(),
@@ -42,7 +42,7 @@ fn main() {
             3 => NonMaskableInt(),
             4 => {
                 let mut ef: ExceptionFrame = core::mem::uninitialized();
-                klee::ksymbol!(&mut ef, "EXCEPTION_FRAME");
+                klee::klee_make_ksymbolic!(&mut ef, "EXCEPTION_FRAME");
                 HardFault(&ef)
             }
             5 => MemoryManagement(),
