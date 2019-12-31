@@ -22,6 +22,7 @@ cortex-m-rt-macros = { path = "macros", version = "0.1" }
 [dependencies.klee-sys]
 version = "0.1.0"
 git ="https://gitlab.henriktjader.com/pln/klee-sys"
+optional = true
 
 [dev-dependencies]
 cortex-m = "0.6"

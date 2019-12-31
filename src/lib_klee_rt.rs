@@ -1,6 +1,6 @@
 //! klee-rt
-
 extern crate cortex_m_rt_macros as macros;
+extern crate klee_sys;
 use klee_sys::{klee_abort, klee_make_symbolic};
 
 pub use self::macros::{entry, exception, pre_init};
