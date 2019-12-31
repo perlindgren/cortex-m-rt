@@ -1,7 +1,7 @@
 //! klee-rt
 
 extern crate cortex_m_rt_macros as macros;
-extern crate klee-sys;
+extern crate klee_sys;
 
 pub use self::macros::{entry, exception, pre_init};
 
