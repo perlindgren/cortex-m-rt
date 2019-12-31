@@ -36,13 +36,13 @@ fn main() {
             1 => user_main(),
             2 => {
                 let mut irqn: i16 = 0;
-                klee::ksymbol!(&mut irqn, "IRQN");
+                klee::klee_make_symbolic!(&mut irqn, "IRQN");
                 DefaultHandler(irqn)
             }
             3 => NonMaskableInt(),
             4 => {
                 let mut ef: ExceptionFrame = core::mem::uninitialized();
-                klee::klee_make_ksymbolic!(&mut ef, "EXCEPTION_FRAME");
+                klee::klee_make_symbolic!(&mut ef, "EXCEPTION_FRAME");
                 HardFault(&ef)
             }
             5 => MemoryManagement(),
@@ -53,7 +53,7 @@ fn main() {
             10 => DebugMonitor(),
             11 => PendSV(),
             12 => SysTick(),
-            _ => klee::abort(),
+            _ => klee::abort!(),
         }
     }
 }
