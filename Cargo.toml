@@ -15,10 +15,10 @@ edition = "2018"
 [package.metadata.docs.rs]
 features = ["device"]
 
-[patch.crates-io]
-vcell = { git = "https://github.com/perlindgren/vcell.git" }
-volatile-register = { git = "https://github.com/perlindgren/volatile-register.git" }
-cortex-m = { git = "https://github.com/perlindgren/cortex-m.git", branch = "klee-analysis" }
+# [patch.crates-io]
+# vcell = { git = "https://github.com/perlindgren/vcell.git" }
+# volatile-register = { git = "https://github.com/perlindgren/volatile-register.git" }
+# cortex-m = { git = "https://github.com/perlindgren/cortex-m.git", branch = "klee-analysis" }
 
 
 [dependencies]
@@ -27,18 +27,18 @@ cortex-m-rt-macros = { path = "macros", version = "0.1.5" }
 panic-abort = "0.3.1"
 
 [dependencies.klee]
-version = "0.2.0"
-git ="https://gitlab.henriktjader.com/pln/cargo-klee"
+version = "0.1.0"
+git ="https://gitlab.henriktjader.com/pln/klee-sys"
 
 # just here to force version 3
-[dependencies.volatile-register]
-version = "0.3.0"
-optional = true
+# [dependencies.volatile-register]
+# version = "0.3.0"
+# optional = true
 
 # just here to force version 2
-[dependencies.vcell]
-version = "0.2.0"
-optional = true
+# [dependencies.vcell]
+# version = "0.2.0"
+# optional = true
 # panic-abort = "0.3.1"
 
 [dev-dependencies]
@@ -59,7 +59,8 @@ required-features = ["device"]
 
 [features]
 device = []
-klee-analysis = ["cortex-m-rt-macros/klee-analysis", "klee/klee-analysis", "cortex-m/klee-analysis", "volatile-register/klee-analysis", "vcell/klee-analysis"]
+# klee-analysis = ["cortex-m-rt-macros/klee-analysis", "klee/klee-analysis", "cortex-m/klee-analysis", "volatile-register/klee-analysis", "vcell/klee-analysis"]
+klee-analysis = []
 
 [profile.dev]
 incremental = false
