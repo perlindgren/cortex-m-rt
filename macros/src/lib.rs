@@ -149,19 +149,33 @@ pub fn entry(args: TokenStream, input: TokenStream) -> TokenStream {
             }
         })
         .collect::<Vec<_>>();
+    if cfg!(feature = "klee-analysis") {
+        quote!(
+            #[doc(hidden)]
+            #[export_name = "main_klee"]
+            pub unsafe extern "C" fn #tramp_ident() {
+                #ident(
+                    #(#resource_args),*
+                )
+            }
 
-    quote!(
-        #[doc(hidden)]
-        #[export_name = "main"]
-        pub unsafe extern "C" fn #tramp_ident() {
-            #ident(
-                #(#resource_args),*
-            )
-        }
+            #f
+        )
+        .into()
+    } else {
+        quote!(
+            #[doc(hidden)]
+            #[export_name = "main"]
+            pub unsafe extern "C" fn #tramp_ident() {
+                #ident(
+                    #(#resource_args),*
+                )
+            }
 
-        #f
-    )
-    .into()
+            #f
+        )
+        .into()
+    }
 }
 
 /// Attribute to declare an exception handler

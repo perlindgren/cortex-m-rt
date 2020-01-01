@@ -396,9 +396,9 @@
 // - `link_section` is used to place symbols in specific places of the final binary. The names used
 // here will appear in the linker script (`link.x`) in conjunction with the `KEEP` command.
 
-#![deny(missing_docs)]
-#![deny(warnings)]
-#![no_std]
+// #![deny(missing_docs)]
+// #![deny(warnings)]
+// #![no_std]
 
 extern crate cortex_m_rt_macros as macros;
 extern crate r0;
@@ -408,9 +408,9 @@ use core::sync::atomic::{self, Ordering};
 
 #[cfg(feature = "device")]
 #[doc(inline)]
-pub use macros::interrupt;
+pub use self::macros::interrupt;
 #[doc(inline)]
-pub use macros::{entry, exception, pre_init};
+pub use self::macros::{entry, exception, pre_init};
 
 #[export_name = "error: cortex-m-rt appears more than once in the dependency graph"]
 #[doc(hidden)]
@@ -643,7 +643,9 @@ pub static __EXCEPTIONS: [Vector; 14] = [
         handler: NonMaskableInt,
     },
     // Exception 3: Hard Fault Interrupt.
-    Vector { handler: HardFaultTrampoline },
+    Vector {
+        handler: HardFaultTrampoline,
+    },
     // Exception 4: Memory Management Interrupt [not on Cortex-M0 variants].
     #[cfg(not(armv6m))]
     Vector {

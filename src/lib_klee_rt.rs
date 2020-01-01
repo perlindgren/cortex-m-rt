@@ -11,7 +11,10 @@ pub use self::macros::{entry, exception, pre_init};
 
 #[no_mangle]
 fn main() {
-    loop {}
+    extern "Rust" {
+        fn main_klee() -> !;
+    }
+    unsafe { main_klee() }
 }
 //     extern "Rust" {
 //         fn __pre_init();
