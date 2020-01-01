@@ -1,7 +1,7 @@
 //! klee-rt
 extern crate cortex_m_rt_macros as macros;
-// extern crate klee_sys;
-// use klee_sys::{klee_abort, klee_make_symbolic};
+extern crate klee_sys;
+use self::klee_sys::{klee_abort, klee_assume, klee_make_symbolic};
 
 pub use self::macros::{entry, exception, pre_init};
 
@@ -10,12 +10,28 @@ pub use self::macros::{entry, exception, pre_init};
 //
 
 #[no_mangle]
-fn main() {
+unsafe fn main() {
     extern "Rust" {
+        fn __pre_init();
         fn main_klee() -> !;
+        fn DefaultHandler(_irqn: i16) -> !;
     }
-    unsafe { main_klee() }
+    // excepiton
+    let mut exception: u8 = 0;
+    klee_make_symbolic!(&mut exception, "EXCEPTION");
+    klee_assume(exception <= 2);
+    match exception {
+        0 => __pre_init(),
+        1 => main_klee(),
+        2 => {
+            let mut irqn: i16 = 0;
+            klee_make_symbolic!(&mut irqn, "IRQN");
+            DefaultHandler(irqn)
+        }
+        _ => unreachable!(),
+    }
 }
+
 //     extern "Rust" {
 //         fn __pre_init();
 //         fn user_main();

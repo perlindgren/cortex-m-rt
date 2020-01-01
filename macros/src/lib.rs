@@ -357,22 +357,32 @@ pub fn exception(args: TokenStream, input: TokenStream) -> TokenStream {
             let tramp_ident = Ident::new(&format!("{}_trampoline", f.sig.ident), Span::call_site());
             let ident = &f.sig.ident;
 
-            quote!(
-                #[doc(hidden)]
-                #[export_name = #ident_s]
-                pub unsafe extern "C" fn #tramp_ident() {
-                    extern crate core;
+            if cfg!(feature = "klee-analysis") {
+                quote!(
+                    #[doc(hidden)]
+                    #[export_name = #ident_s]
 
-                    const SCB_ICSR: *const u32 = 0xE000_ED04 as *const u32;
+                    #f
+                )
+                .into()
+            } else {
+                quote!(
+                    #[doc(hidden)]
+                    #[export_name = #ident_s]
+                    pub unsafe extern "C" fn #tramp_ident() {
+                        extern crate core;
 
-                    let irqn = unsafe { core::ptr::read(SCB_ICSR) as u8 as i16 - 16 };
+                        const SCB_ICSR: *const u32 = 0xE000_ED04 as *const u32;
 
-                    #ident(irqn)
-                }
+                        let irqn = unsafe { core::ptr::read(SCB_ICSR) as u8 as i16 - 16 };
 
-                #f
-            )
-            .into()
+                        #ident(irqn)
+                    }
+
+                    #f
+                )
+                .into()
+            }
         }
         Exception::HardFault => {
             let valid_signature = f.sig.constness.is_none()
