@@ -19,15 +19,19 @@ autoexamples = true
 r0 = "0.2.2"
 cortex-m-rt-macros = { path = "macros", version = "0.1" }
 
+[dependencies.cortex-m]
+version = "0.6.1"
+optional = true
+
 [dependencies.klee-sys]
 version = "0.1.0"
 git ="https://gitlab.henriktjader.com/pln/klee-sys"
-# optional = true
+optional = true
 
 [dev-dependencies]
-cortex-m = "0.6"
 panic-halt = "0.2.0"
 cortex-m-semihosting = "0.3"
+cortex-m = "0.6.1"
 
 [target.'cfg(not(target_os = "none"))'.dev-dependencies]
 compiletest_rs = "0.4.0"
@@ -42,7 +46,7 @@ required-features = ["device"]
 
 [features]
 device = []
-klee-analysis = ["cortex-m-rt-macros/klee-analysis"]
+klee-analysis = ["klee-sys", "cortex-m-rt-macros/klee-analysis", "cortex-m/klee-analysis"]
 # klee-analysis = [ "klee-sys/" ]
 
 [package.metadata.docs.rs]
