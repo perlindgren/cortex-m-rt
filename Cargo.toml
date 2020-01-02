@@ -44,10 +44,13 @@ required-features = ["device"]
 name = "compiletest"
 required-features = ["device"]
 
+[patch.crates-io]
+vcell = { git = "https://github.com/perlindgren/vcell.git", branch = "trustit" }
+cortex-m = { git = "https://github.com/perlindgren/cortex-m.git", branch = "trustit" }
+
 [features]
 device = []
 klee-analysis = ["klee-sys", "cortex-m-rt-macros/klee-analysis", "cortex-m/klee-analysis"]
-# klee-analysis = [ "klee-sys/" ]
 
 [package.metadata.docs.rs]
 features = ["device"]

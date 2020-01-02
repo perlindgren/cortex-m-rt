@@ -474,15 +474,19 @@ pub fn exception(args: TokenStream, input: TokenStream) -> TokenStream {
                 )
                 .unwrap()
             }));
-            f.block.stmts = iter::once(
-                syn::parse2(quote! {{
-                    // check that this exception actually exists
-                    exception::#ident;
-                }})
-                .unwrap(),
-            )
-            .chain(stmts)
-            .collect();
+            if cfg!(feature = "klee-analysis") {
+                f.block.stmts = stmts;
+            } else {
+                f.block.stmts = iter::once(
+                    syn::parse2(quote! {{
+                        // check that this exception actually exists
+                        exception::#ident;
+                    }})
+                    .unwrap(),
+                )
+                .chain(stmts)
+                .collect();
+            }
 
             let tramp_ident = Ident::new(&format!("{}_trampoline", f.sig.ident), Span::call_site());
             let ident = &f.sig.ident;
