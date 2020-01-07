@@ -3,7 +3,9 @@ authors = [
     "The Cortex-M Team <cortex-m@teams.rust-embedded.org>",
     "Jorge Aparicio <jorge@japaric.io>",
     "Hideki Sekine <sekineh@me.com>",
+    "Per Lindgren <per.lindgren@ltu.se>" # trustit features
 ]
+
 categories = ["embedded", "no-std"]
 description = "Minimal runtime / startup for Cortex-M microcontrollers"
 documentation = "https://docs.rs/cortex-m-rt/"
@@ -51,6 +53,7 @@ cortex-m = { git = "https://github.com/perlindgren/cortex-m.git", branch = "trus
 [features]
 device = []
 klee-analysis = ["klee-sys", "cortex-m-rt-macros/klee-analysis", "cortex-m/klee-analysis"]
+rtpro = []
 
 [package.metadata.docs.rs]
 features = ["device"]

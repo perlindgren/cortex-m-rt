@@ -11,6 +11,8 @@ use ExceptionFrame;
 // user_main (generated from [entry])
 //
 
+// do not provide `main` if compiled for RTFM
+#[cfg(not(feature = "rtpro"))]
 #[no_mangle]
 unsafe fn main() {
     extern "Rust" {
@@ -57,3 +59,5 @@ unsafe fn main() {
         _ => unreachable!(),
     }
 }
+
+pub use self::macros::interrupt;
