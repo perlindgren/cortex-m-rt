@@ -8,6 +8,11 @@
 #![deny(missing_docs)]
 // #![deny(warnings)]
 #![no_std]
+#![feature(asm)]
+// #![cfg(feature = "klee-replay", feature(asm)] // set the asm feature for klee-replay
+#![cfg(feature = "klee-replay")]
+#[macro_use]
+extern crate cortex_m;
 
 // Common data structures
 /// Registers stacked (pushed into the stack) during an exception
@@ -41,15 +46,15 @@ pub struct ExceptionFrame {
 // re-exports
 
 // re-export `lib_klee_rt` thumb library as `cortex_m_rt`
-#[cfg(feature = "klee-analysis")]
+#[cfg(any(feature = "klee-analysis", feature = "klee-replay"))]
 pub mod lib_klee_rt;
-#[cfg(feature = "klee-analysis")]
+#[cfg(any(feature = "klee-analysis", feature = "klee-replay"))]
 pub use self::lib_klee_rt::*;
 
 // re-export `lib_thumb_rt` thumb library as `cortex_m_rt`
-#[cfg(not(feature = "klee-analysis"))]
+#[cfg(all(not(feature = "klee-analysis"), feature = "klee-replay"))]
 pub mod lib_thumb_rt;
-#[cfg(not(feature = "klee-analysis"))]
+#[cfg(all(not(feature = "klee-analysis"), feature = "klee-replay"))]
 pub use self::lib_thumb_rt::*; // ugly path for now...
 
 // pub use lib_thumb_rt::*; // self can be dropped when uniform paths are stabalized
