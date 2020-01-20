@@ -57,4 +57,4 @@ pub mod lib_thumb_rt;
 #[cfg(all(not(feature = "klee-analysis"), feature = "klee-replay"))]
 pub use self::lib_thumb_rt::*; // ugly path for now...
 
-// pub use lib_thumb_rt::*; // self can be dropped when uniform paths are stabalized
+// pub use lib_thumb_rt::*; // self can be dropped when uniform paths are stabilized
