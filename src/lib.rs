@@ -10,10 +10,12 @@
 #![no_std]
 #![feature(asm)]
 // #![cfg(feature = "klee-replay", feature(asm)] // set the asm feature for klee-replay
-#![cfg(feature = "klee-replay")]
+// #![cfg(feature = "klee-replay")]
 #[macro_use]
 extern crate cortex_m;
 
+// extern crate cortex_m_rt_macros as macros;
+// pub use self::macros::interrupt;
 // Common data structures
 /// Registers stacked (pushed into the stack) during an exception
 #[derive(Clone, Copy)]
@@ -58,3 +60,5 @@ pub mod lib_thumb_rt;
 pub use self::lib_thumb_rt::*; // ugly path for now...
 
 // pub use lib_thumb_rt::*; // self can be dropped when uniform paths are stabilized
+#[cfg(all(not(feature = "klee-analysis"), not(feature = "klee-replay")))]
+compile_error!("no feature set");

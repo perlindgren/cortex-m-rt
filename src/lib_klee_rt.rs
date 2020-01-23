@@ -4,6 +4,7 @@ extern crate klee_sys;
 use self::klee_sys::{klee_abort, klee_assume, klee_make_symbolic};
 
 // re-export macros
+pub use self::macros::interrupt;
 pub use self::macros::{entry, exception, pre_init};
 
 use ExceptionFrame;
@@ -66,6 +67,6 @@ unsafe fn main() {
     }
     #[cfg(feature = "klee-replay")]
     bkpt!();
+    #[cfg(feature = "klee-analysis")]
+    klee_abort!();
 }
-
-pub use self::macros::interrupt;
